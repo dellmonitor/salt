@@ -88,7 +88,7 @@ Game.run = (function() {
 	return function() {
 		loops = 0;
 
-		while ((new Date).getTime() > nextGameTick && loops < maxFrameSkip) {
+		while ((new Date).getTime() > nextGameTick) {
 			Game.update();
 			nextGameTick += skipTicks;
 			loops++;
