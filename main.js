@@ -77,7 +77,7 @@ Game.start = function() {
 
 	Game.player = new Player();
 
-	window.onEachFrame(Game.run);
+	Game._onEachFrame(Game.run);
 };
 
 Game.run = (function() {
@@ -98,20 +98,19 @@ Game.run = (function() {
 	};
 })();
 
-(function() {
-	var onEachFrame;
-	if (window.requestAnimationFrame) {
-		onEachFrame = function(cb) {
+Game._onEachFrame = (function() {
+	var requestAnimationFrame = window.webkitRequestAnimationFrame ||
+								window.mozRequestAnimationFrame;
+	if (requestAnimationFrame) {
+		return function(cb) {
 			var _cb = function() { cb(); requestAnimationFrame(_cb); }
 			_cb();
 		};
 	} else {
-		onEachFrame = function(cb) {
+		return function(cb) {
 			setInterval(cb, 1000 / Game.fps);
 		}
 	}
-
-	window.onEachFrame = onEachFrame;
 })();
 
 window.addEventListener('keyup', function(event) { Key.onKeyup(event); }, false);
