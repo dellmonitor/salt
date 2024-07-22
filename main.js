@@ -1,7 +1,8 @@
 var Game = {
 	fps: 50,
 	width: 640,
-	height: 480
+	height: 480,
+	objects: []
 };
 
 function Player() {
@@ -59,11 +60,13 @@ Player.prototype.update = function() {
 
 Game.update = function() {
 	Game.player.update();
+	Game.objects.forEach((object) => object.update());
 };
 
 Game.draw = function() {
 	Game.context.clearRect(0, 0, Game.width, Game.height);
 	Game.player.draw(Game.context);
+	Game.objects.forEach((object) => object.draw(Game.context));
 };
 
 Game.start = function() {
@@ -72,6 +75,10 @@ Game.start = function() {
 	Game.canvas.height = Game.height;
 
 	Game.context = Game.canvas.getContext("2d");
+
+	for (let i = 0; i < 10; i++) {
+		Game.objects.push(new Enemy(Math.random() * Game.width, Math.random() * Game.width, 16, 16));
+	}
 
 	document.body.appendChild(Game.canvas);
 
