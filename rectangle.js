@@ -11,16 +11,16 @@ Rectangle = function(x, y, width, height) {
 };
 
 Rectangle.prototype.contains = function(point) {
-	return (point.x >= this.x - this.width 	&&
-			point.x <= this.x + this.width 	&&
-			point.y >= this.y - this.height &&
-			point.y <= this.y + this.height);
+	return (point.x >= this.left 	&&
+			point.x <= this.right	&&
+			point.y >= this.top		&&
+			point.y <= this.bottom);
 };
 
 Rectangle.prototype.intersects = function(range) {
-	return (this.right >= range.left &&
-			this.left <= range.rigth &&
-			this.bottom >= range.top &&
-			this.top <= range.bottom);
+	return ! (range.x - range.width > this.x + this.width 	||
+			  range.x + range.width < this.x - this.width 	||
+			  range.y - range.height > this.y + this.height ||
+			  range.y + range.height < this.y - this.height);
 }
 
