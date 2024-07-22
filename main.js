@@ -2,12 +2,34 @@ var Game = {
 	fps: 50,
 	width: 640,
 	height: 480,
-	objects: []
+	objects: new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4)
 };
+
+Quadtree.prototype.update = function() {
+	this.points.forEach((point) => point.userData.update());
+	if (this.isDivided) {
+		this.northeast.update();
+		this.southeast.update();
+		this.southwest.update();
+		this.northwest.update();
+	}
+}
+
+Quadtree.prototype.draw = function(context) {
+	this.points.forEach((point) => point.userData.draw(context));
+	if (this.isDivided) {
+		this.northeast.draw(context);
+		this.southeast.draw(context);
+		this.southwest.draw(context);
+		this.northwest.draw(context);
+	}
+}
 
 function Player() {
 	this.x = 0;
 	this.y = 0;
+	this.hitbox = new Rectangle(0, 0, 16, 16);
+	this.isColliding = false;
 }
 
 var Key = {
@@ -32,6 +54,10 @@ var Key = {
 };
 
 Player.prototype.draw = function(context) {
+	context.fillStyle = 'black';
+	if (this.isColliding) {
+		context.fillStyle = 'blue';
+	}
 	context.fillRect(this.x, this.y, 32, 32);
 };
 
@@ -56,17 +82,27 @@ Player.prototype.update = function() {
 	if (Key.isDown(Key.LEFT)) this.moveLeft();
 	if (Key.isDown(Key.DOWN)) this.moveDown();
 	if (Key.isDown(Key.RIGHT)) this.moveRight();
+	this.isColliding = false;
+	this.hitbox = new Rectangle(this.x, this.x, 16, 16);
+	let range = new Rectangle(this.x, this.y, this.hitbox.width * 2, this.hitbox.height * 2);
+	let others = Game.objects.query(range);
+	for (let other of others) {
+		if (this.hitbox.intersects(other)) {
+			this.isColliding = true;
+		}
+	}
+
 };
 
 Game.update = function() {
 	Game.player.update();
-	Game.objects.forEach((object) => object.update());
+	Game.objects.update();
 };
 
 Game.draw = function() {
 	Game.context.clearRect(0, 0, Game.width, Game.height);
 	Game.player.draw(Game.context);
-	Game.objects.forEach((object) => object.draw(Game.context));
+	Game.objects.draw(Game.context);
 };
 
 Game.start = function() {
@@ -77,7 +113,9 @@ Game.start = function() {
 	Game.context = Game.canvas.getContext("2d");
 
 	for (let i = 0; i < 10; i++) {
-		Game.objects.push(new Enemy(Math.random() * Game.width, Math.random() * Game.width, 16, 16));
+		let x = Math.random() * Game.width;
+		let y = Math.random() * Game.height;
+		Game.objects.insert(new Point(x, y, new Enemy(x, y, 16, 16)));
 	}
 
 	document.body.appendChild(Game.canvas);
