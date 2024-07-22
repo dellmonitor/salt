@@ -60,6 +60,12 @@ Quadtree.prototype.query = function(range, found) {
 		return found;
 	}
 
+	for (const p of this.points) {
+		if (range.contains(p)) {
+			found.push(p);
+		}
+	}
+
 	if (this.isDivided) {
 		this.northeast.query(range, found);
 		this.southeast.query(range, found);
@@ -68,11 +74,6 @@ Quadtree.prototype.query = function(range, found) {
 		return found;
 	}
 
-	for (const p of this.points) {
-		if (range.contains(p)) {
-			found.push(p);
-		}
-	}
 
 	return found;
 };
