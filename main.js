@@ -25,13 +25,6 @@ Quadtree.prototype.draw = function(context) {
 	}
 }
 
-function Player() {
-	this.x = 0;
-	this.y = 0;
-	this.hitbox = new Rectangle(0, 0, 16, 16);
-	this.isColliding = false;
-}
-
 var Key = {
 	_pressed: {},
 
@@ -51,47 +44,6 @@ var Key = {
 	onKeyup: function(event) {
 		delete this._pressed[event.keyCode];
 	}
-};
-
-Player.prototype.draw = function(context) {
-	context.fillStyle = 'black';
-	if (this.isColliding) {
-		context.fillStyle = 'blue';
-	}
-	context.fillRect(this.x, this.y, 32, 32);
-};
-
-Player.prototype.moveLeft = function() {
-	this.x -= 1;
-};
-
-Player.prototype.moveRight = function() {
-	this.x += 1;
-};
-
-Player.prototype.moveUp = function() {
-	this.y -= 1;
-};
-
-Player.prototype.moveDown = function() {
-	this.y += 1;
-};
-
-Player.prototype.update = function() {
-	if (Key.isDown(Key.UP)) this.moveUp();
-	if (Key.isDown(Key.LEFT)) this.moveLeft();
-	if (Key.isDown(Key.DOWN)) this.moveDown();
-	if (Key.isDown(Key.RIGHT)) this.moveRight();
-	this.isColliding = false;
-	this.hitbox = new Rectangle(this.x, this.x, 16, 16);
-	let range = new Rectangle(this.x, this.y, this.hitbox.width * 2, this.hitbox.height * 2);
-	let others = Game.objects.query(range);
-	for (let other of others) {
-		if (this.hitbox.intersects(other)) {
-			this.isColliding = true;
-		}
-	}
-
 };
 
 Game.update = function() {
@@ -115,7 +67,7 @@ Game.start = function() {
 	for (let i = 0; i < 10; i++) {
 		let x = Math.random() * Game.width;
 		let y = Math.random() * Game.height;
-		Game.objects.insert(new Point(x, y, new Enemy(x, y, 16, 16)));
+		Game.objects.insert(new Point(x, y, new Enemy(x, y, new Rectangle(x, y, 16, 16), 'red')));
 	}
 
 	document.body.appendChild(Game.canvas);
