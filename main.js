@@ -58,11 +58,11 @@ Game.draw = function() {
 };
 
 Game.start = function() {
-	Game.canvas = document.createElement("canvas");
+	Game.canvas = document.createElement('canvas');
 	Game.canvas.width = Game.width;
 	Game.canvas.height = Game.height;
 
-	Game.context = Game.canvas.getContext("2d");
+	Game.context = Game.canvas.getContext('2d');
 
 	for (let i = 0; i < 10; i++) {
 		let x = Math.random() * Game.width;
