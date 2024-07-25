@@ -76,7 +76,7 @@ Game.start = function() {
 	for (let i = 1; i < 100; i++) {
 		let x = Math.random() * Game.width;
 		let y = Math.random() * Game.height;
-		Game.objects.push(new Enemy(x, y, new Rectangle(x, y, 16, 16), 'red'));
+		Game.objects.push(new Enemy(x, y, new Rectangle(x, y, 16, 16), 'red', 1));
 		Game.qt.insert(new Point(x, y, Game.objects[i]));
 	}
 
