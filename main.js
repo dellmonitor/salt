@@ -2,7 +2,8 @@ var Game = {
 	fps: 50,
 	width: 640,
 	height: 480,
-	objects: new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4)
+	objects: [],
+	qt: new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4)
 };
 
 Quadtree.prototype.update = function() {
@@ -47,14 +48,18 @@ var Key = {
 };
 
 Game.update = function() {
-	Game.player.update();
-	Game.objects.update();
+	Game.qt =  new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4);
+	for (object of Game.objects) {
+		Game.qt.insert(new Point(object.x, object.y, object));
+	}
+	for (object of Game.objects) {
+		object.update();
+	}
 };
 
 Game.draw = function() {
 	Game.context.clearRect(0, 0, Game.width, Game.height);
-	Game.player.draw(Game.context);
-	Game.objects.draw(Game.context);
+	Game.qt.draw(Game.context);
 };
 
 Game.start = function() {
@@ -64,15 +69,18 @@ Game.start = function() {
 
 	Game.context = Game.canvas.getContext('2d');
 
-	for (let i = 0; i < 10; i++) {
+	Game.player = new Player();
+	Game.objects.push(Game.player);
+	Game.qt.insert(new Point(Game.player.x, Game.player.y, Game.player));
+
+	for (let i = 1; i < 100; i++) {
 		let x = Math.random() * Game.width;
 		let y = Math.random() * Game.height;
-		Game.objects.insert(new Point(x, y, new Enemy(x, y, new Rectangle(x, y, 16, 16), 'red')));
+		Game.objects.push(new Enemy(x, y, new Rectangle(x, y, 16, 16), 'red'));
+		Game.qt.insert(new Point(x, y, Game.objects[i]));
 	}
 
 	document.body.appendChild(Game.canvas);
-
-	Game.player = new Player();
 
 	Game._onEachFrame(Game.run);
 };
