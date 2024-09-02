@@ -12,16 +12,20 @@ class Rectangle {
 	}
 
 	contains(point) {
-		return (point.x >= this.left 	&&
+		return (point.x >= this.left	&&
 				point.x <= this.right	&&
 				point.y >= this.top		&&
 				point.y <= this.bottom);
 	}
 
 	intersects(range) {
-		return ! (range.x - range.width > this.x + this.width 	||
-				  range.x + range.width < this.x - this.width 	||
-				  range.y - range.height > this.y + this.height ||
-				  range.y + range.height < this.y - this.height);
+		if (range instanceof Rectangle) {
+			return ! (range.x - range.width > this.x + this.width 	||
+					  range.x + range.width < this.x - this.width 	||
+					  range.y - range.height > this.y + this.height ||
+					  range.y + range.height < this.y - this.height);
+		} else if (range instanceof Circle) {
+			return range.intersects(this);
+		}
 	}
 }

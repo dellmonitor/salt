@@ -12,32 +12,36 @@ class Entity {
 	}
 
 	get isColliding() {
-			let range = new Rectangle(this.x, this.y, this.hitbox.width * 2, this.hitbox.height * 2);
-			let points = Game.qt.query(range);
-			for (let point of points) {
-				if (this != point.userData && this.hitbox.intersects(point)) {
-					return true;
-				}
+		let range = new Circle(this.x, this.y, this.hitbox.r * 2);
+		let points = Game.qt.query(range);
+		for (let point of points) {
+			if (point.userData != this && this.hitbox.intersects(point.userData.hitbox)) {
+				return true;
 			}
-			return false;
+		}
+		return false;
 	}
 
 	get velocity() {
-			let length = Math.sqrt(Math.pow(this.speed.x, 2) + Math.pow(this.speed.y, 2));
-			if (length != 0) {
-				return {
-					x: this.speed.x * this.speed.base / length,
-					y: this.speed.y * this.speed.base / length
-				}
-			}
+		let length = Math.sqrt(Math.pow(this.speed.x, 2) + Math.pow(this.speed.y, 2));
+		if (length != 0) {
 			return {
-				x: 0,
-				y: 0
+				x: this.speed.x * this.speed.base / length,
+				y: this.speed.y * this.speed.base / length
 			}
+		}
+		return {
+			x: 0,
+			y: 0
+		}
 	}
 
 	draw(context) {
 		context.fillStyle = this.color;
-		context.fillRect(this.x, this.y, this.hitbox.width * 2, this.hitbox.height * 2);
+		context.strokeStyle = this.color;
+		context.beginPath();
+		context.arc(this.x, this.y, this.hitbox.r, 0, 2 * Math.PI);
+		context.fill();
+		context.stroke();
 	}
 }

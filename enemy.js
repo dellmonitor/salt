@@ -14,7 +14,7 @@ class Enemy extends Entity {
 		this.speed.y = Game.player.y - this.y;
 		this.move();
 		this.color = 'red';
-		this.hitbox = new Rectangle(this.x, this.x, 16, 16);
+		this.hitbox = new Circle(this.x, this.y, 16);
 		if (this.isColliding) {
 			this.color = 'pink';
 		}
