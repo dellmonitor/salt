@@ -1,6 +1,6 @@
 class Player extends Entity {
-	constructor() {
-		super(0, 0, new Circle(0, 0, 16), 'black', 2);
+	constructor(x, y) {
+		super(x, y, new Circle(x, y, 16), 'black', 2);
 	}
 
 	moveLeft() 	{ this.speed.x -= 1; }
@@ -25,5 +25,14 @@ class Player extends Entity {
 		this.color = 'black';
 		this.hitbox = new Circle(this.x, this.y, 16);
 		if (this.isColliding) this.color = 'blue';
+	}
+
+	draw(context) {
+		context.fillStyle = this.color;
+		context.strokeStyle = this.color;
+		context.beginPath();
+		context.arc(Game.width / 2, Game.height / 2, this.hitbox.r, 0, 2 * Math.PI);
+		context.fill();
+		context.stroke();
 	}
 }

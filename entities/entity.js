@@ -40,7 +40,11 @@ class Entity {
 		context.fillStyle = this.color;
 		context.strokeStyle = this.color;
 		context.beginPath();
-		context.arc(this.x, this.y, this.hitbox.r, 0, 2 * Math.PI);
+		context.arc(this.x - Game.player.x + Game.width / 2,
+					this.y - Game.player.y + Game.height / 2,
+					this.hitbox.r,
+					0,
+					2 * Math.PI);
 		context.fill();
 		context.stroke();
 	}

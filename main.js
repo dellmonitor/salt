@@ -48,7 +48,7 @@ var Key = {
 };
 
 Game.update = function() {
-	Game.qt =  new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4);
+	Game.qt =  new Quadtree(new Rectangle(Game.player.x, Game.player.y, Game.width / 2, Game.height / 2), 4);
 	for (object of Game.objects) {
 		Game.qt.insert(new Point(object.x, object.y, object));
 	}
@@ -69,7 +69,7 @@ Game.start = function() {
 
 	Game.context = Game.canvas.getContext('2d');
 
-	Game.player = new Player();
+	Game.player = new Player(this.width / 2, this.height / 2);
 	Game.objects.push(Game.player);
 	Game.qt.insert(new Point(Game.player.x, Game.player.y, Game.player));
 
