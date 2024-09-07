@@ -4,7 +4,7 @@ var Game = {
 	height: 480,
 	objects: [],
 	qt: new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4),
-	perlin: new Perlin(2, 2),
+	perlin: new Perlin(4, 3),
 	tilesize: 32,
 };
 
@@ -63,12 +63,12 @@ Game.draw = function() {
 
 
 	Game.context.clearRect(0, 0, Game.width, Game.height);
-	for (let y = 0; y < Game.perlin.height; y += Game.perlin.height / (Game.height / Game.tilesize + 2))  {
-		for (let x = 0; x < Game.perlin.width; x += Game.perlin.width / (Game.width / Game.tilesize + 2))  {
+	for (let y = 0; y < Game.perlin.height; y += Game.perlin.height / (Game.height / Game.tilesize + 3))  {
+		for (let x = 0; x < Game.perlin.width; x += Game.perlin.width / (Game.width / Game.tilesize + 3))  {
 			var v = (Game.perlin.noise(x, y) / 2 + 0.5) * 255;
 			Game.context.fillStyle = 'hsl(' + v + ', 50% ,50%)';
-			Game.context.fillRect(x * ((Game.width + 1 * Game.tilesize) / Game.perlin.width) - Game.player.x + Game.width / 2 - Game.tilesize,
-								  y * ((Game.height + 2 * Game.tilesize) / Game.perlin.height) - Game.player.y + Game.height / 2 - Game.tilesize,
+			Game.context.fillRect(x * ((Game.width + 3 * Game.tilesize) / Game.perlin.width) - Game.player.x + Game.width / 2 - 2 * Game.tilesize,
+								  y * ((Game.height + 3 * Game.tilesize) / Game.perlin.height) - Game.player.y + Game.height / 2 - 2 * Game.tilesize,
 								  Game.tilesize,
 								  Game.tilesize);
 		}
