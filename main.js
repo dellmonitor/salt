@@ -4,7 +4,6 @@ var Game = {
 	height: 480,
 	objects: [],
 	qt: new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4),
-	perlin: new Perlin(4, 3),
 	tilesize: 32,
 };
 
@@ -57,20 +56,27 @@ Game.update = function() {
 	for (object of Game.objects) {
 		object.update();
 	}
+	if ((Math.abs((Game.player.x - Game.width / 2) - Game.perlin[1][1].x) > Game.tilesize)
+	|| ((Math.abs((Game.player.y - Game.height / 2) - Game.perlin[1][1].y) > Game.tilesize)))  {
+	}
 };
 
 Game.draw = function() {
 
 
 	Game.context.clearRect(0, 0, Game.width, Game.height);
-	for (let y = 0; y < Game.perlin.height; y += Game.perlin.height / (Game.height / Game.tilesize + 3))  {
-		for (let x = 0; x < Game.perlin.width; x += Game.perlin.width / (Game.width / Game.tilesize + 3))  {
-			var v = (Game.perlin.noise(x, y) / 2 + 0.5) * 255;
-			Game.context.fillStyle = 'hsl(' + v + ', 50% ,50%)';
-			Game.context.fillRect(x * ((Game.width + 3 * Game.tilesize) / Game.perlin.width) - Game.player.x + Game.width / 2 - 2 * Game.tilesize,
-								  y * ((Game.height + 3 * Game.tilesize) / Game.perlin.height) - Game.player.y + Game.height / 2 - 2 * Game.tilesize,
-								  Game.tilesize,
-								  Game.tilesize);
+	for (let i = 0; i < 3; i++) {
+		for (let j = 0; j < 3; j++) {
+			for (let y = 0; y < Game.perlin[i][j].height; y += Game.perlin[i][j].height / (Game.height / Game.tilesize))  {
+				for (let x = 0; x < Game.perlin[i][j].width; x += Game.perlin[i][j].width / (Game.width / Game.tilesize))  {
+					var v = (Game.perlin[i][j].noise(x, y) / 2 + 0.5) * 255;
+					Game.context.fillStyle = 'hsl(' + v + ', 50% ,50%)';
+					Game.context.fillRect(Game.perlin[i][j].x + x * (Game.width / Game.perlin[i][j].width) - Game.player.x + Game.width / 2 ,
+										  Game.perlin[i][j].y + y * (Game.height / Game.perlin[i][j].height) - Game.player.y + Game.height / 2 ,
+										  Game.tilesize,
+										  Game.tilesize);
+				}
+			}
 		}
 	}
 	Game.qt.draw(Game.context);
@@ -86,6 +92,22 @@ Game.start = function() {
 	Game.player = new Player(this.width / 2, this.height / 2);
 	Game.objects.push(Game.player);
 	Game.qt.insert(new Point(Game.player.x, Game.player.y, Game.player));
+
+	Game.perlin = [];
+	for (let y = -1; y <= 1; y++) {
+		let row = [];
+		for (let x = -1; x <= 1; x++) {
+			let perlin = new Perlin(4, 3, x * Game.width, y * Game.height);
+			for (let i = 0; i < (x != -1 ? 3 : 0); i++) {
+				perlin.grid[i][0] = row[x].grid[i][perlin.width];
+			}
+			for (let j = 0; j < (y != -1 ? 4 : 0); j++) {
+				perlin.grid[0][j] = Game.perlin[y][x + 1].grid[perlin.height][j];
+			}
+			row.push(perlin);
+		}
+		Game.perlin.push(row);
+	}
 
 	for (let i = 1; i < 60; i++) {
 		let x = Math.random() * Game.width;

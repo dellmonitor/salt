@@ -4,7 +4,7 @@ class Vector {
 		this.y = y;
 	}
 
-	static randomUnit() {
+	static randomUnit(getRand) {
 		let radians = getRand() * 2 * Math.PI;
 		return new Vector(Math.sin(radians), Math.cos(radians));
 	}
@@ -24,19 +24,21 @@ function fade(t) {
 }
 
 class Perlin {
-	constructor(width, height) {
+	constructor(width, height, x, y) {
 		// Сетка градиентных векторов
 		let grid = [];
 		for (let x = 0; x <= height; x++) {
 			let row = [];
 			for (let y = 0; y <= width; y++) {
-				row.push(Vector.randomUnit());
+				row.push(Vector.randomUnit(getRandNE));
 			}
 			grid.push(row);
 		}
 		this.grid = grid;
 		this.width = width;
 		this.height = height;
+		this.x = x;
+		this.y = y;
 	}
 
 	// x < width

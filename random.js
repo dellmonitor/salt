@@ -13,4 +13,9 @@ function xoshiro128ss(a, b, c, d) {
 }
 
 const seedgen = () => (Math.random()*2**32)>>>0;
-const getRand = xoshiro128ss(seedgen(), seedgen(), seedgen(), seedgen());
+// const getRand = xoshiro128ss(seedgen(), seedgen(), seedgen(), seedgen());
+
+const getRandNE = xoshiro128ss(seedgen(), 0, 0, 0);
+const getRandNW = xoshiro128ss(0, seedgen(), 0, 0);
+const getRandSW = xoshiro128ss(0, 0, seedgen(), 0);
+const getRandSE = xoshiro128ss(0, 0, 0, seedgen(), );
