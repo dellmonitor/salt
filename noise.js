@@ -24,13 +24,13 @@ function fade(t) {
 }
 
 class Perlin {
-	constructor(width, height, x, y) {
+	constructor(width, height, x, y, getRand) {
 		// Сетка градиентных векторов
 		let grid = [];
 		for (let x = 0; x <= height; x++) {
 			let row = [];
 			for (let y = 0; y <= width; y++) {
-				row.push(Vector.randomUnit(getRandNE));
+				row.push(Vector.randomUnit(getRand));
 			}
 			grid.push(row);
 		}

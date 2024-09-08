@@ -48,6 +48,41 @@ var Key = {
 	}
 };
 
+Game.generatemap = function() {
+	Game.perlin = [];
+	for (let i = -1; i <= 1; i++) {
+		let row = [];
+		for (let j = -1; j <= 1; j++) {
+			let x = j * Game.width + Math.floor(Game.player.x / Game.width) * Game.width;
+			let y = i * Game.height + Math.floor(Game.player.y / Game.height) * Game.height;
+			let paired = pair(x, y);
+			let getRand = NaN;
+			if (x >= 0) {
+				if (y >= 0) {
+					getRand = xoshiro128ss(paired, Game.seed, Game.seed, Game.seed);
+				} else {
+					getRand = xoshiro128ss(Game.seed, paired, Game.seed, Game.seed);
+				}
+			} else {
+				if (y >= 0) {
+					getRand = xoshiro128ss(Game.seed, Game.seed, paired, Game.seed);
+				} else {
+					getRand = xoshiro128ss(Game.seed, Game.seed, Game.seed, paired);
+				}
+			}
+			let perlin = new Perlin(4, 3, x, y, getRand);
+			for (let m = 0; m < (j != -1 ? 3 : 0); m++) {
+				perlin.grid[m][0] = row[j].grid[m][perlin.width];
+			}
+			for (let n = 0; n < (i != -1 ? 4 : 0); n++) {
+				perlin.grid[0][n] = Game.perlin[i][j + 1].grid[perlin.height][n];
+			}
+			row.push(perlin);
+		}
+		Game.perlin.push(row);
+	}
+}
+
 Game.update = function() {
 	Game.qt =  new Quadtree(new Rectangle(Game.player.x, Game.player.y, Game.width / 2, Game.height / 2), 4);
 	for (object of Game.objects) {
@@ -56,8 +91,9 @@ Game.update = function() {
 	for (object of Game.objects) {
 		object.update();
 	}
-	if ((Math.abs((Game.player.x - Game.width / 2) - Game.perlin[1][1].x) > Game.tilesize)
-	|| ((Math.abs((Game.player.y - Game.height / 2) - Game.perlin[1][1].y) > Game.tilesize)))  {
+	if ((Math.abs((Game.player.x - Game.width / 2) - Game.perlin[1][1].x) > Game.width / 2 + Game.tilesize)
+	|| ((Math.abs((Game.player.y - Game.height / 2) - Game.perlin[1][1].y) > Game.height / 2 + Game.tilesize)))  {
+		Game.generatemap();
 	}
 };
 
@@ -93,28 +129,9 @@ Game.start = function() {
 	Game.objects.push(Game.player);
 	Game.qt.insert(new Point(Game.player.x, Game.player.y, Game.player));
 
-	Game.perlin = [];
-	for (let y = -1; y <= 1; y++) {
-		let row = [];
-		for (let x = -1; x <= 1; x++) {
-			let perlin = new Perlin(4, 3, x * Game.width, y * Game.height);
-			for (let i = 0; i < (x != -1 ? 3 : 0); i++) {
-				perlin.grid[i][0] = row[x].grid[i][perlin.width];
-			}
-			for (let j = 0; j < (y != -1 ? 4 : 0); j++) {
-				perlin.grid[0][j] = Game.perlin[y][x + 1].grid[perlin.height][j];
-			}
-			row.push(perlin);
-		}
-		Game.perlin.push(row);
-	}
+	Game.seed = (Math.random() * 2 ** 32) >>> 0;
 
-	for (let i = 1; i < 60; i++) {
-		let x = Math.random() * Game.width;
-		let y = Math.random() * Game.height;
-		Game.objects.push(new Enemy(x, y, new Circle(x, y, 16), 'red', 1));
-		Game.qt.insert(new Point(x, y, Game.objects[i]));
-	}
+	Game.generatemap();
 
 	document.body.appendChild(Game.canvas);
 
