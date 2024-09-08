@@ -109,8 +109,8 @@ Game.draw = function() {
 					Game.context.fillStyle = 'hsl(' + v + ', 50% ,50%)';
 					Game.context.fillRect(Game.perlin[i][j].x + x * (Game.width / Game.perlin[i][j].width) - Game.player.x + Game.width / 2 ,
 										  Game.perlin[i][j].y + y * (Game.height / Game.perlin[i][j].height) - Game.player.y + Game.height / 2 ,
-										  Game.tilesize,
-										  Game.tilesize);
+										  Game.tilesize + 1,
+										  Game.tilesize + 1);
 				}
 			}
 		}
