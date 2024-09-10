@@ -157,8 +157,6 @@ Game.run = (function() {
 })();
 
 Game._onEachFrame = (function() {
-	var requestAnimationFrame = window.webkitRequestAnimationFrame ||
-								window.mozRequestAnimationFrame;
 	if (requestAnimationFrame) {
 		return function(cb) {
 			var _cb = function() { cb(); requestAnimationFrame(_cb); }
