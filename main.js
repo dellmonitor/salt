@@ -1,9 +1,9 @@
 var Game = {
 	fps: 50,
-	width: 640,
-	height: 480,
+	width: 1920,
+	height: 1080,
 	objects: [],
-	qt: new Quadtree(new Rectangle(640 / 2, 480 / 2, 640 / 2, 480 / 2), 4),
+	qt: new Quadtree(new Rectangle(1920 / 2, 1080 / 2, 1920 / 2, 1080 / 2), 4),
 	tilesize: 32,
 };
 
@@ -50,8 +50,10 @@ var Key = {
 
 Game.generatemap = function() {
 	Game.perlin = [];
+	Game.tilemap = [];
 	for (let i = -1; i <= 1; i++) {
 		let row = [];
+		let screenrow = [];
 		for (let j = -1; j <= 1; j++) {
 			let x = j * Game.width + Math.floor(Game.player.x / Game.width) * Game.width;
 			let y = i * Game.height + Math.floor(Game.player.y / Game.height) * Game.height;
@@ -70,15 +72,26 @@ Game.generatemap = function() {
 					getRand = xoshiro128ss(Game.seed, Game.seed, Game.seed, paired);
 				}
 			}
-			let perlin = new Perlin(4, 3, x, y, getRand);
-			for (let m = 0; m < (j != -1 ? 3 : 0); m++) {
+			let perlin = new Perlin(16, 9, x, y, getRand);
+			for (let m = 0; m < (j != -1 ? 9 : 0); m++) {
 				perlin.grid[m][0] = row[j].grid[m][perlin.width];
 			}
-			for (let n = 0; n < (i != -1 ? 4 : 0); n++) {
+			for (let n = 0; n < (i != -1 ? 16 : 0); n++) {
 				perlin.grid[0][n] = Game.perlin[i][j + 1].grid[perlin.height][n];
 			}
 			row.push(perlin);
+			let screen = [];
+			for (let y = 0; y < perlin.height; y += perlin.height / (Game.height / Game.tilesize))  {
+				let tilerow = [];
+				for (let x = 0; x < perlin.width; x += perlin.width / (Game.width / Game.tilesize))  {
+					var v = (perlin.noise(x, y) / 2 + 0.5) * 255;
+					tilerow.push(v);
+				}
+				screen.push(tilerow);
+			}
+			screenrow.push(screen);
 		}
+		Game.tilemap.push(screenrow);
 		Game.perlin.push(row);
 	}
 }
@@ -97,18 +110,19 @@ Game.update = function() {
 	}
 };
 
+Game.startdrawing = [0.5, 0, 0];
+Game.enddrawing = [1, 1, 0.5];
+
 Game.draw = function() {
-
-
 	Game.context.clearRect(0, 0, Game.width, Game.height);
 	for (let i = 0; i < 3; i++) {
 		for (let j = 0; j < 3; j++) {
-			for (let y = 0; y < Game.perlin[i][j].height; y += Game.perlin[i][j].height / (Game.height / Game.tilesize))  {
-				for (let x = 0; x < Game.perlin[i][j].width; x += Game.perlin[i][j].width / (Game.width / Game.tilesize))  {
-					var v = (Game.perlin[i][j].noise(x, y) / 2 + 0.5) * 255;
+			for (let y = Math.floor(Game.startdrawing[i] * Math.floor(Game.height / Game.tilesize)); y <= Game.enddrawing[i] * Game.height / Game.tilesize; y++) {
+				for (let x = Math.floor(Game.startdrawing[j] * Math.floor(Game.width / Game.tilesize)); x <= Game.enddrawing[j]  * Game.width / Game.tilesize; x++) {
+					var v = Game.tilemap[i][j][y][x];
 					Game.context.fillStyle = 'hsl(' + v + ', 50% ,50%)';
-					Game.context.fillRect(Game.perlin[i][j].x + x * (Game.width / Game.perlin[i][j].width) - Game.player.x + Game.width / 2 ,
-										  Game.perlin[i][j].y + y * (Game.height / Game.perlin[i][j].height) - Game.player.y + Game.height / 2 ,
+					Game.context.fillRect(Game.perlin[i][j].x + x * Game.tilesize - Game.player.x + Game.width / 2 ,
+										  Game.perlin[i][j].y + y * Game.tilesize - Game.player.y + Game.height / 2 ,
 										  Game.tilesize + 1,
 										  Game.tilesize + 1);
 				}
