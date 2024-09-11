@@ -133,7 +133,7 @@ Game.draw = function() {
 };
 
 Game.start = function() {
-	Game.canvas = document.createElement('canvas');
+	Game.canvas = document.getElementById('game');
 	Game.canvas.width = Game.width;
 	Game.canvas.height = Game.height;
 
@@ -146,8 +146,6 @@ Game.start = function() {
 	Game.seed = (Math.random() * 2 ** 32) >>> 0;
 
 	Game.generatemap();
-
-	document.body.appendChild(Game.canvas);
 
 	Game._onEachFrame(Game.run);
 };
