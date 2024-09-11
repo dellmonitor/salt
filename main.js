@@ -110,8 +110,8 @@ Game.update = function() {
 	}
 };
 
-Game.startdrawing = [0.5, 0, 0];
-Game.enddrawing = [1, 1, 0.5];
+Game.startdrawing = [0.4, 0, 0];
+Game.enddrawing = [1, 1, 0.6];
 
 Game.draw = function() {
 	Game.context.clearRect(0, 0, Game.width, Game.height);
